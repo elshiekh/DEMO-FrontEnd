@@ -24,10 +24,8 @@ export class BooksComponent implements OnInit {
   loading!: boolean;
   first: number = 0;
 
-  //filter
-
   filter: any = {
-    pageSize: 5,
+    pageSize: 10,
     pageNumber: 1,
     bookTitle: null,
     bookDescription: null,
@@ -44,10 +42,10 @@ export class BooksComponent implements OnInit {
       { label: 'Search Work Orders' }
     ];
     this.searchForm = this.fb.group({
-      bookTitle: [null],
-      bookDescription: [null],
-      author: [null],
-      publishDate: [null]
+      bookTitle: this.filter.bookTitle,
+      bookDescription: this.filter.bookDescription,
+      author: this.filter.author,
+      publishDate: this.filter.publishDate
     })
 
     this.tableConfig.tableHeaders = [
@@ -66,20 +64,18 @@ export class BooksComponent implements OnInit {
   }
 
   searchBook() {
-    debugger;
+    Object.assign(this.searchFilter, this.searchForm.value);
     this.searchFilter.bookTitle = this.searchForm.value.bookTitle;
     this.searchFilter.bookDescription = this.searchForm.value.bookDescription;
     this.searchFilter.publishDate = this.searchForm.value.publishDate;
     this.searchFilter.author = this.searchForm.value.author;
+    this.searchFilter.pageNumber = this.filter.pageNumber;
 
     this.bookService.searchBooks(this.searchFilter).subscribe(data => {
-      debugger;
-      this.tableConfig.pageFilter.totalItems = data['totalRows'];
-      debugger;
-      console.log(data.result);
+      this.tableConfig.pageFilter.totalItems = data.queryResult.totalItems;
+      this.totalRows = data.queryResult.totalItems;
       let tableData: any = [];
-      data.result?.forEach((e: any) => {
-        debugger;
+      data.queryResult.items?.forEach((e: any) => {
         var item = JSON.parse(e.bookInfo)
         tableData.push({
           "BookId": e.bookId,
@@ -91,53 +87,24 @@ export class BooksComponent implements OnInit {
       });
 
       this.tableConfig.tableData = tableData;
-      this.totalRows = tableData.length;
-      this.tableConfig.pageFilter.totalRows = tableData.length;
+      //  this.totalRows = tableData.length;
+       this.tableConfig.pageFilter.totalRows = data.queryResult.totalItems;;
       this.tableConfig.tableName = "Books"
     })
 
   }
 
-
-  paginate(e: any) {
-    // alert(e);
-    this.searchFilter.page = e;
-    this.tableConfig.pageFilter.pageNumber = e
-    this.searchBook()
-  }
-
-
-  route(event: any) {
-  }
-
-  editBook(e: any) {
-    // this.bookService.deleteBook("W",e,e).subscribe(res=>{
-    //   if (res.isSuccess)
-    //   {
-    //     if (res.data.nextId != null)
-    //     {
-    //       this.bookService.getParentInfo(e,0).subscribe((res) => {
-    //         if (res.isSuccess)
-    //         {
-    //           this.router.navigate(['/maintenance/work-orders/work-orders-view'], { queryParams: { callId: res.data.callId,id: e } }); 
-    //         }
-    //       })
-    //     }
-    //     else
-    //     {
-    //       this.bookService.getParentInfo(e,0).subscribe((res) => {
-    //         if (res.isSuccess)
-    //         {
-    //           this.router.navigate(['/maintenance/work-orders/work-orders-update'], { queryParams: { callId: res.data.callId,id: e } }); 
-    //         }
-    //       })
-    //     }
-    //   }
-    // })
-
-  }
   reset() {
-    this.first = 0;
+    this.searchForm.reset();
+    this.searchFilter = new BookSearch();
+    this.searchBook();
+  }
+
+  paginate(event: any) {
+    this.loading = true;
+    this.filter.pageNumber = event.page + 1;
+    this.searchBook();
+    this.loading = false;
   }
 }
 
