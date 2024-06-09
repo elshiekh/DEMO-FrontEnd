@@ -1,0 +1,95 @@
+<!--begin::Table-->
+<div class="card">
+  <!--begin::Card header-->
+  <div class="card-header bg-primary">
+    <!--begin::Card title-->
+    <div class="card-title">
+      <span class="text-white">{{tableData.tableName}}</span>
+    </div>
+    <!--begin::Card title-->
+    <!--begin::Card toolbar-->
+    <div class="card-toolbar">
+      <!--begin::Toolbar-->
+      <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+        <!--begin::Add-->
+        <button *ngIf="tableData.addRow" type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal"
+          (click)="Add()">
+          Add</button>
+        <!--end::Export-->
+        <!--begin::Export-->
+        <button *ngIf="tableData.exportRow" type="button" class="btn btn-light-primary me-3" data-bs-toggle="modal" (click)="export()">
+          Export</button>
+        <!--end::Export-->
+      </div>
+      <!--end::Toolbar-->
+
+    </div>
+    <!--end::Card toolbar-->
+  </div>
+  <!--end::Card header-->
+  <!--begin::Card body-->
+
+  <div class="card-body p-1" style="overflow-x: auto;">
+    <p-table #dt [value]="tableData.tableData" styleClass="table align-middle table-row-dashed fs-6 gy-5"
+      [rows]="tableData.pageFilter.itemsPerPage" [loading]="loading" [lazy]="true"
+      [(selection)]="tableData.selectedItems" [totalRecords]="tableData.pageFilter.totalItems"
+      [tableStyle]="{'min-width': '75rem'}" [rowHover]="false" dataKey="Id">
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="text-center" *ngIf="checkbox"> <p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+          <th class="text-center" *ngFor='let header of tableData.tableHeaders;'> {{header}}</th>
+          <th class="text-center" *ngIf="tableData.editRow || tableData.deleteRow">Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData>
+
+
+        <tr>
+          <td class="text-center" *ngIf="checkbox">
+
+            <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+          </td>
+          <td class="text-center" *ngFor=" let col of tableData.tableHeaders;">
+            <!-- <ng-container *ngFor=" let c of tableData.clickableLinks;"> -->
+
+            <div *ngIf="checkLink(col); else elseTemp">
+              <a (click)="route(col,rowData)" style="color: blue;cursor: pointer;"> {{rowData[col]}}</a>
+            </div>
+            <ng-template #elseTemp>
+
+              {{rowData[col]}}
+            </ng-template>
+            <!-- </ng-container> -->
+            <!-- <ng-container *ngIf="tableData.clickableLinks.length==0">
+            {{rowData[col]}}
+          </ng-container> -->
+
+          </td>
+          <td class="text-center" *ngIf="tableData.editRow || tableData.deleteRow">
+            <button *ngIf="tableData.editRow " pButton pRipple icon="pi pi-pencil"
+              class="p-button-rounded p-button-info mr-2" (click)="edit(rowData.Id)"></button>
+
+            <button *ngIf="tableData.deleteRow" pButton pRipple icon="pi pi-trash"
+              class="p-button-rounded p-button-danger" (click)="delete(rowData)"></button>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+    <p-paginator *ngIf="tableData.tableData.length != 0" [rows]="tableData.pageFilter.itemsPerPage"
+      [totalRecords]="tableData.pageFilter.totalItems" (onPageChange)="changePage($event)"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"></p-paginator>
+
+
+
+    <div *ngIf="tableData.tableData.length == 0">
+      <span class="d-flex justify-content-center secondary noDataFound">
+        <h4>
+          <no-data></no-data>
+        </h4>
+      </span>
+      <hr>
+    </div>
+  </div>

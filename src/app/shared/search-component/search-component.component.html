@@ -1,0 +1,31 @@
+<!-- <div class="view-name-def-headerview-name-def-header card">
+  <div class=" grid " style="display:flex;">
+    <div class="col-12 flex align-items-center justify-content-center filters-input">
+      <ng-content></ng-content>
+    </div>
+  </div>
+  <div class="" >
+    <div class="card-footer d-flex justify-content-end border-top py-6">
+      <button class="btn btn-primary m-1"(click)="Search()">Search</button>
+      <button class="btn btn-primary m-1"(click)="Reset()">Reset</button>
+    </div>
+  </div>
+</div> -->
+<div class="card card-flush mb-6 mb-xl-9">
+<div class="card-header bg-primary">
+  <div class="card-title">
+    <h2 class="d-flex align-items-center text-white"> Search </h2>
+  </div>
+</div>
+
+<!--begin Search Fields -->
+  <div class="card-body pt-5">
+    <ng-content></ng-content>
+  </div>
+  <div class="card-footer d-flex justify-content-end border-top py-6">
+    <button type="button" class="btn btn-primary" (click)="Search()">Search</button>
+    <button type="button" class="btn btn-light btn-active-light-primary me-2" style="margin-left: 1%;" (click)="Reset()"> Reset </button>
+    
+  </div>
+</div>
+<!--end Search Fields-->

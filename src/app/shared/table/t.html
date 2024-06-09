@@ -1,0 +1,97 @@
+<ng-container *ngIf="tableData">
+    <div class="table-title d-flex justify-content-between align-items-center mb-3"
+      *ngIf="tableData.filter || tableData.addRow ||tableData.tableName">
+      <h4 class="fw-bold mb-3" *ngIf="tableData.tableName">
+        {{tableData.tableName | translate}}
+      </h4>
+      <div *ngIf="tableData.filter || tableData.addRow">
+        <button type="button" class="btn btn-primary" *ngIf="tableData.addRow" (click)="add()">
+          <i [class]="tableData.actionButtonsText.add.icon"></i>
+          {{tableData.actionButtonsText.add.Text | translate}}
+        </button>
+      </div>
+    </div>
+  
+    <div>
+      <table class="table">
+        <thead class="thead-light ">
+          <tr>
+            <th *ngFor='let header of tableData.tableHeaders;let i = index;'>
+              <span> {{header | translate}}</span>
+            </th>
+            <th *ngIf="tableData.editRow || tableData.deleteRow || tableData.showDetails || tableData.otherButton"
+              class="text-end">
+              {{"Actions"}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+  
+          <ng-container *ngFor='let rowData of tableData.tableData  | paginate: {
+            totalItems :tableData.pageFilter.totalItems,
+              itemsPerPage: tableData.pageFilter.itemsPerPage,
+              currentPage: tableData.pageFilter.currentPage } '>
+            <tr *ngIf="rowContainsFilterText(rowData)  ">
+              <td *ngFor='let header of tableData.tableHeaders;' [class]="getClass(header,rowData[header])">
+                <div *ngIf="tableData.cellClick &&inClickHeader(header) " [id]="header">
+                  <a (click)="cellClickEvent(rowData,header)"><strong><u>
+                        {{rowData[header]}}
+                      </u></strong></a>
+                </div>
+                <div *ngIf="!(tableData.cellClick && inClickHeader(header)) " [id]="header">
+                  {{rowData[header]}}
+                </div>
+              </td>
+              <td *ngIf="tableData.editRow || tableData.deleteRow || tableData.showDetails || tableData.otherButton ">
+                <div class="d-flex justify-content-end">
+                  <ng-container *ngIf="actionListOrButtons">
+                    <p-menu [model]="items"></p-menu>
+                  </ng-container>
+                  <ng-container *ngIf="!actionListOrButtons">
+                    <!-- <button *ngIf="tableData.deleteRow" class="btn btn-sm btn-info me-2"
+                      title="{{tableData.actionButtonsText.delete.Text}}" (click)="delete(rowData[tableData.idHeader])">
+                      <i [class]="tableData.actionButtonsText.delete.icon"></i>
+                    </button> -->
+                    <button *ngIf="tableData.editRow " class="btn btn-sm btn-info ms-2"
+                      title="{{tableData.actionButtonsText.edit.Text}}" (click)="edit(rowData[tableData.idHeader])">
+                      <i [class]="tableData.actionButtonsText.edit.icon"></i>
+                    </button>
+                    <button *ngIf="tableData.showDetails" class="btn btn-sm btn-info ms-2"
+                      title="{{tableData.actionButtonsText.more.Text}}" (click)="details(rowData)">
+                      <i [class]="tableData.actionButtonsText.more.icon"></i>
+                    </button>
+                    <button *ngIf="tableData.otherButton" class="btn btn-sm btn-info ms-2"
+                      title="{{tableData.actionButtonsText.other.Text}}" (click)="otherFun(rowData)">
+                      <i [class]="tableData.actionButtonsText.other.icon"></i>
+                    </button>
+                    <button *ngIf="tableData.extraDetails" class="btn btn-sm btn-info ms-2"
+                      title="{{tableData.actionButtonsText.extraDetails.Text}}" (click)="extraDetailsFunction(rowData)">
+                      <i [class]="tableData.actionButtonsText.extraDetails.icon"></i>
+                    </button>
+                    <button *ngIf="tableData.deleteRow" class="btn btn-sm btn-danger ms-2"
+                      title="{{tableData.actionButtonsText.delete.Text}}" (click)="delete(rowData[tableData.idHeader])">
+                      <i [class]="tableData.actionButtonsText.delete.icon"></i>
+                    </button>
+                  </ng-container>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-between pt-2">
+        <div class="flex-fill d-flex justify-content-center">
+          <pagination-controls (pageChange)=" changePage($event)"
+            (pageBoundsCorrection)="changePage($event)"></pagination-controls>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="tableData.tableData.length == 0">
+      <span class="d-flex justify-content-center secondary noDataFound">
+        <h4>
+          <no-data></no-data>
+        </h4>
+      </span>
+      <hr>
+    </div>
+  </ng-container>
